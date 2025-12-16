@@ -1,34 +1,50 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Canlı Katılım</title>
-  <style>
-    body{font-family:system-ui;margin:16px}
-    h1{font-size:22px}
-    li{margin-bottom:6px}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Canlı Katılım</title>
+<style>
+  body{font-family:system-ui;margin:16px}
+  h1{font-size:22px}
+  li{margin-bottom:6px}
+  #err{margin-top:12px;white-space:pre-wrap}
+</style>
 </head>
 <body>
 
-<h1>👥 Katılım Sayısı: <span id="total">0</span></h1>
+<h1>👥 Katılım: <span id="total">0</span></h1>
+<div id="err"></div>
 <ul id="list"></ul>
 
 <script>
 const API = "https://muhametkaplan.app.n8n.cloud/webhook/katilim-listesi";
 
 async function load(){
-  const r = await fetch(API);
-  const d = await r.json();
+  const err = document.getElementById("err");
+  err.textContent = "";
 
-  document.getElementById("total").innerText = d.total;
-  document.getElementById("list").innerHTML =
-    d.list.map(i => `<li>${i.name} (${i.phone})</li>`).join("");
+  try{
+    const r = await fetch(API, { cache: "no-store" });
+    const text = await r.text();          // önce text al
+    let d;
+    try { d = JSON.parse(text); } catch { throw new Error("API JSON dönmedi:\n" + text); }
+
+    document.getElementById("total").innerText = d.total ?? 0;
+
+    // list bazen string bazen array olabilir
+    const list = Array.isArray(d.list) ? d.list : JSON.parse(d.list || "[]");
+
+    document.getElementById("list").innerHTML =
+      list.map(i => `<li>${i.name ?? "-"} (${i.phone ?? "-"})</li>`).join("");
+
+  }catch(e){
+    err.textContent = "HATA:\n" + (e?.message || e);
+  }
 }
 
 load();
-setInterval(load, 5000); // 5 saniyede bir yeniler
+setInterval(load, 5000);
 </script>
 
 </body>
