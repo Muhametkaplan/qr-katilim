@@ -2,37 +2,34 @@
 <html lang="tr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Katılım</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Canlı Katılım</title>
+  <style>
+    body{font-family:system-ui;margin:16px}
+    h1{font-size:22px}
+    li{margin-bottom:6px}
+  </style>
 </head>
 <body>
-  <h2>Katılım Formu</h2>
 
-  <input id="name" placeholder="Ad Soyad">
-  <br><br>
-  <input id="phone" placeholder="Telefon">
-  <br><br>
-
-  <button onclick="send()">Geldim</button>
-
-  <p id="msg"></p>
+<h1>👥 Katılım Sayısı: <span id="total">0</span></h1>
+<ul id="list"></ul>
 
 <script>
-const WEBHOOK = "https://muhametkaplan.app.n8n.cloud/webhook/qr-checkin";
+const API = "https://muhametkaplan.app.n8n.cloud/webhook/katilim-listesi";
 
-function send() {
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
+async function load(){
+  const r = await fetch(API);
+  const d = await r.json();
 
-  fetch(WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, phone })
-  })
-  .then(r => r.text())
-  .then(t => document.getElementById("msg").innerText = t)
-  .catch(() => document.getElementById("msg").innerText = "Hata oluştu");
+  document.getElementById("total").innerText = d.total;
+  document.getElementById("list").innerHTML =
+    d.list.map(i => `<li>${i.name} (${i.phone})</li>`).join("");
 }
+
+load();
+setInterval(load, 5000); // 5 saniyede bir yeniler
 </script>
+
 </body>
 </html>
