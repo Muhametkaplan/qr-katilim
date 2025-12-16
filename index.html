@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Katılım</title>
+</head>
+<body>
+  <h2>Katılım Formu</h2>
+
+  <input id="name" placeholder="Ad Soyad">
+  <br><br>
+  <input id="phone" placeholder="Telefon">
+  <br><br>
+
+  <button onclick="send()">Geldim</button>
+
+  <p id="msg"></p>
+
+<script>
+const WEBHOOK = "BURAYA_N8N_WEBHOOK_URL";
+
+function send() {
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+
+  fetch(WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, phone })
+  })
+  .then(r => r.text())
+  .then(t => document.getElementById("msg").innerText = t)
+  .catch(() => document.getElementById("msg").innerText = "Hata oluştu");
+}
+</script>
+</body>
+</html>
