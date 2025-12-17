@@ -1,14 +1,13 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Canlı Katılım</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Canlı Katılım</title>
 </head>
 <body>
-
-<h2>👥 Katılım Sayısı: <span id="total">0</span></h2>
-<ul id="list"></ul>
+  <h2>👥 Katılım Sayısı: <span id="total">0</span></h2>
+  <ul id="list"></ul>
 
 <script>
 const API = "https://muhametkaplan.app.n8n.cloud/webhook/canli-katilim";
@@ -19,7 +18,7 @@ async function load(){
 
   document.getElementById("total").innerText = d.total;
 
-  const list = JSON.parse(d.list);
+  const list = JSON.parse(d.list || "[]");
   document.getElementById("list").innerHTML =
     list.map(i => `<li>${i.name} (${i.phone})</li>`).join("");
 }
@@ -27,6 +26,5 @@ async function load(){
 load();
 setInterval(load, 5000);
 </script>
-
 </body>
 </html>
